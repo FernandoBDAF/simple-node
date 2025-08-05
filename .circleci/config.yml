@@ -1,24 +1,51 @@
-language: node_js
-node_js:
-  - latest
+version: 2.1
 
-services:
-  - docker
+jobs:
+  test:
+    docker:
+      - image: cimg/node:18.0
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run tests
+          command: npm test
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+          destination: test-results
 
-# Pre-testing installs
-install:
-  - echo "nothing needs to be installed"
+  build-and-push:
+    docker:
+      - image: cimg/docker:20.10
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: Build Docker image
+          command: docker build -t simple-node .
+      - run:
+          name: Tag Docker image
+          command: docker tag simple-node fernandobdaf/simple-node:latest
+      - run:
+          name: Login to Docker Hub
+          command: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - run:
+          name: Push Docker image
+          command: docker push fernandobdaf/simple-node:latest
 
-# Scripts to be run such as tests
-before_script:
-  - npm install
-  - npm run test
-
-script:
-  - docker --version # print the version for logging
-  - docker build -t simple-node .
-  - docker tag simple-node fernandobdaf/simple-node:latest
-
-after_success:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker push fernandobdaf/simple-node
+workflows:
+  version: 2
+  test-and-deploy:
+    jobs:
+      - test
+      - build-and-push:
+          requires:
+            - test
+          filters:
+            branches:
+              only: main
