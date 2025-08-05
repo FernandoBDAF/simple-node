@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: cimg/node:18.0
+      - image: cimg/node:18.19
     steps:
       - checkout
       - run:
@@ -12,19 +12,12 @@ jobs:
       - run:
           name: Run tests
           command: npm test
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: test-results
-          destination: test-results
 
-  build-and-push:
-    docker:
-      - image: cimg/docker:20.10
+  build:
+    machine:
+      image: ubuntu-2004:202111-02
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.14
       - run:
           name: Build Docker image
           command: docker build -t simple-node .
@@ -33,7 +26,7 @@ jobs:
           command: docker tag simple-node fernandobdaf/simple-node:latest
       - run:
           name: Login to Docker Hub
-          command: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          command: echo "$DOCKER_PASSWORD" | docker login -u fernandobdaf --password-stdin
       - run:
           name: Push Docker image
           command: docker push fernandobdaf/simple-node:latest
@@ -43,7 +36,7 @@ workflows:
   test-and-deploy:
     jobs:
       - test
-      - build-and-push:
+      - build:
           requires:
             - test
           filters:
