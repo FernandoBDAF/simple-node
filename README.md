@@ -43,3 +43,8 @@ The tests cover:
 
 ## Create CI with Trevis
 - 
+
+## Create CI with CircleCI
+- 
+
+## Create CI with Jerkins
