@@ -36,5 +36,10 @@ The tests cover:
 - Access container: `docker exec -it {container_id} sh`
 
 ## Deploy container to DockerHub
+- docker build -t simple-node .
+- docker tag simple-node fernandobdaf/simple-node:latest
+- docker login
+- docker push fernandobdaf/simple-node
 
 ## Create CI with Trevis
+- 
