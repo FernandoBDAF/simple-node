@@ -45,6 +45,9 @@ The tests cover:
 - 
 
 ## Create CI with CircleCI
-- 
+- connect to github and create the yaml file at .circleci folder
 
-## Create CI with Jerkins
+## Creating a K8s cluster with AWS EKS
+- Create cluster and nodegroups
+- aws eks --region us-east-1 update-kubeconfig --name Demo
+

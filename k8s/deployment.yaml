@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simply-node
+  labels:
+    app: simply-node
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: simply-node
+  template:
+    metadata:
+      labels:
+        app: simply-node
+    spec:
+      containers:
+      - name: simple-node
+        image: fernandobdaf/simple-node
+        ports:
+        - containerPort: 80
